@@ -14,7 +14,291 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      attendance_records: {
+        Row: {
+          attendance_method: string
+          device_info: Json | null
+          id: string
+          location_data: Json | null
+          marked_at: string
+          marked_by: string | null
+          session_id: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          attendance_method?: string
+          device_info?: Json | null
+          id?: string
+          location_data?: Json | null
+          marked_at?: string
+          marked_by?: string | null
+          session_id: string
+          status?: string
+          student_id: string
+        }
+        Update: {
+          attendance_method?: string
+          device_info?: Json | null
+          id?: string
+          location_data?: Json | null
+          marked_at?: string
+          marked_by?: string | null
+          session_id?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_records_marked_by_fkey"
+            columns: ["marked_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "attendance_records_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "attendance_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_records_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      attendance_sessions: {
+        Row: {
+          attendance_method: string
+          course_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          qr_code_data: string | null
+          session_date: string
+          session_time: string
+          session_type: string
+          updated_at: string
+        }
+        Insert: {
+          attendance_method?: string
+          course_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          qr_code_data?: string | null
+          session_date: string
+          session_time: string
+          session_type?: string
+          updated_at?: string
+        }
+        Update: {
+          attendance_method?: string
+          course_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          qr_code_data?: string | null
+          session_date?: string
+          session_time?: string
+          session_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_sessions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      course_enrollments: {
+        Row: {
+          course_id: string
+          enrolled_at: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          course_id: string
+          enrolled_at?: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          course_id?: string
+          enrolled_at?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_enrollments_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          course_code: string
+          course_name: string
+          created_at: string
+          department: string
+          id: string
+          instructor_id: string | null
+          is_active: boolean | null
+          semester: string
+          total_sessions: number | null
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          course_code: string
+          course_name: string
+          created_at?: string
+          department: string
+          id?: string
+          instructor_id?: string | null
+          is_active?: boolean | null
+          semester: string
+          total_sessions?: number | null
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          course_code?: string
+          course_name?: string
+          created_at?: string
+          department?: string
+          id?: string
+          instructor_id?: string | null
+          is_active?: boolean | null
+          semester?: string
+          total_sessions?: number | null
+          updated_at?: string
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_instructor_id_fkey"
+            columns: ["instructor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          department: string | null
+          email: string
+          full_name: string
+          id: string
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email: string
+          full_name: string
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      students: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          department: string | null
+          email: string
+          face_encoding: string | null
+          full_name: string
+          id: string
+          phone: string | null
+          qr_code_data: string | null
+          student_id: string
+          updated_at: string
+          year_of_study: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email: string
+          face_encoding?: string | null
+          full_name: string
+          id?: string
+          phone?: string | null
+          qr_code_data?: string | null
+          student_id: string
+          updated_at?: string
+          year_of_study?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          department?: string | null
+          email?: string
+          face_encoding?: string | null
+          full_name?: string
+          id?: string
+          phone?: string | null
+          qr_code_data?: string | null
+          student_id?: string
+          updated_at?: string
+          year_of_study?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
