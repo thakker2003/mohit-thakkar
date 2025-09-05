@@ -35,7 +35,7 @@ const navigationItems = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, user } = useAuth();
   const currentPath = location.pathname;
   const collapsed = state === 'collapsed';
 
@@ -84,19 +84,21 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4">
-        {!collapsed && profile && (
+        {!collapsed && user && (
           <div className="space-y-2">
-            <div className="flex items-center space-x-2 p-2 rounded-lg bg-accent">
-              <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary-foreground">
-                  {profile.full_name.charAt(0)}
-                </span>
+            {profile && (
+              <div className="flex items-center space-x-2 p-2 rounded-lg bg-accent">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-sm font-semibold text-primary-foreground">
+                    {profile.full_name.charAt(0)}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{profile.full_name}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{profile.role}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{profile.full_name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{profile.role}</p>
-              </div>
-            </div>
+            )}
             <Button
               variant="ghost"
               size="sm"
