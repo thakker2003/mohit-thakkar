@@ -6,20 +6,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   QrCode, 
-  Fingerprint, 
-  Camera, 
   Clock,
   Users,
   Calendar,
   Play,
   Pause,
-  RotateCcw
+  CheckCircle
 } from 'lucide-react';
+import QrScanner from 'react-qr-scanner';
 
 const Attendance = () => {
   const [selectedClass, setSelectedClass] = useState('');
   const [attendanceMethod, setAttendanceMethod] = useState('qr_code');
   const [sessionActive, setSessionActive] = useState(false);
+  const [scannedData, setScannedData] = useState<string | null>(null);
 
   const mockClasses = [
     { id: '1', name: 'Mathematics - Section A', time: '9:00 AM', students: 45 },
@@ -43,13 +43,16 @@ const Attendance = () => {
     }
   };
 
-  const getMethodIcon = (method: string) => {
-    switch (method) {
-      case 'qr_code': return <QrCode className="w-5 h-5" />;
-      case 'biometric': return <Fingerprint className="w-5 h-5" />;
-      case 'facial_recognition': return <Camera className="w-5 h-5" />;
-      default: return <QrCode className="w-5 h-5" />;
+  const handleQrScan = (data: any) => {
+    if (data && sessionActive) {
+      setScannedData(data.text || data);
+      // Here you would typically process the scanned data to mark attendance
+      console.log('QR Code scanned:', data.text || data);
     }
+  };
+
+  const handleScanError = (err: any) => {
+    console.error('QR Scanner error:', err);
   };
 
   const handleStartSession = () => {
@@ -114,19 +117,7 @@ const Attendance = () => {
                   <SelectItem value="qr_code">
                     <div className="flex items-center space-x-2">
                       <QrCode className="w-4 h-4" />
-                      <span>QR Code</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="biometric">
-                    <div className="flex items-center space-x-2">
-                      <Fingerprint className="w-4 h-4" />
-                      <span>Biometrics</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="facial_recognition">
-                    <div className="flex items-center space-x-2">
-                      <Camera className="w-4 h-4" />
-                      <span>Facial Recognition</span>
+                      <span>QR Code Scanner</span>
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -170,59 +161,42 @@ const Attendance = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                  {getMethodIcon(attendanceMethod)}
-                  <span>
-                    {attendanceMethod === 'qr_code' && 'QR Code Scanner'}
-                    {attendanceMethod === 'biometric' && 'Biometric Reader'}
-                    {attendanceMethod === 'facial_recognition' && 'Face Recognition'}
-                  </span>
+                  <QrCode className="w-5 h-5" />
+                  <span>QR Code Scanner</span>
                 </CardTitle>
                 <CardDescription>
-                  {sessionActive ? 'Session is active' : 'Session not started'}
+                  {sessionActive ? 'Scanning for QR codes...' : 'Start session to begin scanning'}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 {sessionActive ? (
                   <div className="space-y-4">
-                    {attendanceMethod === 'qr_code' && (
-                      <div className="aspect-square bg-accent rounded-lg flex items-center justify-center">
-                        <div className="text-center space-y-2">
-                          <QrCode className="w-24 h-24 mx-auto" />
-                          <p className="text-sm">QR Code Active</p>
-                          <p className="text-xs text-muted-foreground">
-                            Students can scan to mark attendance
-                          </p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {attendanceMethod === 'biometric' && (
-                      <div className="aspect-square bg-accent rounded-lg flex items-center justify-center">
-                        <div className="text-center space-y-2">
-                          <Fingerprint className="w-24 h-24 mx-auto" />
-                          <p className="text-sm">Biometric Ready</p>
-                          <p className="text-xs text-muted-foreground">
-                            Place finger on scanner
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {attendanceMethod === 'facial_recognition' && (
-                      <div className="aspect-square bg-accent rounded-lg flex items-center justify-center">
-                        <div className="text-center space-y-2">
-                          <Camera className="w-24 h-24 mx-auto" />
-                          <p className="text-sm">Camera Active</p>
-                          <p className="text-xs text-muted-foreground">
-                            Look at the camera
-                          </p>
+                    <div className="aspect-square bg-background rounded-lg overflow-hidden border">
+                      <QrScanner
+                        onScan={handleQrScan}
+                        onError={handleScanError}
+                        style={{ width: '100%', height: '100%' }}
+                        constraints={{
+                          video: { facingMode: 'environment' }
+                        }}
+                      />
+                    </div>
+                    {scannedData && (
+                      <div className="flex items-center space-x-2 p-3 bg-success/10 rounded-lg border border-success/20">
+                        <CheckCircle className="w-5 h-5 text-success" />
+                        <div>
+                          <p className="text-sm font-medium">QR Code Detected</p>
+                          <p className="text-xs text-muted-foreground">Data: {scannedData}</p>
                         </div>
                       </div>
                     )}
                   </div>
                 ) : (
                   <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                    <p className="text-muted-foreground">Start session to begin</p>
+                    <div className="text-center space-y-2">
+                      <QrCode className="w-16 h-16 mx-auto text-muted-foreground" />
+                      <p className="text-muted-foreground">Start session to begin scanning</p>
+                    </div>
                   </div>
                 )}
               </CardContent>
